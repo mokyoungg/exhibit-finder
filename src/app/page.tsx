@@ -5,13 +5,15 @@ import {
 } from "@tanstack/react-query";
 import { getExhibit } from "@/api/exhibit";
 import ExhibitList from "./component/ExhibitList/ExhibitList";
+import { getQueryClient } from "@/app/get-query-client";
 
 export default async function Home() {
-  const queryClient = new QueryClient();
+  const queryClient = getQueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["exhibit-list"],
-    queryFn: getExhibit,
+  queryClient.prefetchInfiniteQuery({
+    queryKey: ["exhibitList"],
+    queryFn: () => getExhibit(),
+    initialPageParam: 1,
   });
 
   return (
