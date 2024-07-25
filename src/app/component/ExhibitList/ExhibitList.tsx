@@ -5,41 +5,21 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
 import classNames from "classnames/bind";
 import styles from "./ExhibitList.module.scss";
-import { useState } from "react";
 import { useInView } from "react-intersection-observer";
+import useExhibitList from "@/app/hooks/useExhibitList";
 
 const cx = classNames.bind(styles);
 
 const ExhibitList = () => {
-  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["exhibitList"],
-    queryFn: ({ pageParam }) => getExhibit(pageParam),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, pages) => {
-      const totalPages = Math.ceil(
-        lastPage.response.body.totalCount / lastPage.response.body.numOfRows
-      );
-      const nextPage = pages.length + 1;
-
-      return nextPage <= totalPages ? nextPage : undefined;
-    },
-  });
-
-  const list = useMemo(() => {
-    return data?.pages.reduce((acc, item) => {
-      return acc.concat(item.response.body.items.item);
-    }, []);
-  }, [data]);
-
-  console.log("list :", list);
+  const { list, fetchNextPage, hasNextPage, isFetching } = useExhibitList();
 
   const { ref, inView } = useInView();
 
   useEffect(() => {
-    if (inView) {
+    if (inView && hasNextPage && !isFetching) {
       fetchNextPage();
     }
-  }, [inView]);
+  }, [inView, hasNextPage, isFetching]);
 
   return (
     <div className={cx("container")}>
