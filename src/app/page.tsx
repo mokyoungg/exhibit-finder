@@ -10,7 +10,7 @@ import { getQueryClient } from "@/app/get-query-client";
 export default async function Home() {
   const queryClient = getQueryClient();
 
-  queryClient.prefetchInfiniteQuery({
+  await queryClient.prefetchInfiniteQuery({
     queryKey: ["exhibitList"],
     queryFn: () => getExhibit(),
     initialPageParam: 1,
